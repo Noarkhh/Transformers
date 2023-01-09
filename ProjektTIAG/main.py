@@ -67,38 +67,108 @@ def color(s):
             return '#FF0000'
     return '#FFFFFF'
 
-
 def t1(nodes, colors, labels, node):
-    # adds yellow node
-    nodes.append(max(nodes) + 1)
-    edges.append((node, max(nodes)))
+    # adds yellow and pink node, connected to red node
+    if len(node)!=1:
+        print("Incorrect amount of input nodes")
+        return
+    if colors[node[0]]!='#FF0000':
+        print("Incorrect input for this transformation")
+    #adds yellow node
+    if len(nodes)==0:
+        print("Incorrect input")
+    else:
+        nodes.append(max(nodes) + 1)
+    edges.append((node[0], max(nodes)))
     labels.append(str(max(nodes)))
     colors.append('#FFCC00')
 
     # adds pink node
     nodes.append(max(nodes) + 1)
-    edges.append((node, max(nodes)))
+    edges.append((node[0], max(nodes)))
     labels.append(str(max(nodes)))
     colors.append('#FFCCFF')
+    print("Transformation complete")
 
+def t0(nodes, colors, labels, node):
+    #adds one free red node
+    if len(node)>0:
+        print("Incorrect amount of input nodes")
+    if len(nodes) == 0:
+        nodes.append(0)
+    else:
+        nodes.append(max(nodes) + 1)
+    labels.append(str(max(nodes)))
+    colors.append(color("red"))
+    print("Transformation complete")
+
+def t2(nodes, colors, labels, t_nodes):
+    # adds yellow node between red node connected to pink node
+    if len(t_nodes) != 2:
+        print("Incorrect amount of input nodes")
+        return
+    if colors[t_nodes[0]] != color("red") or colors[t_nodes[1]] != color("pink"):
+        print("Incorrect input for this transformation")
+
+    if len(nodes) == 0:
+        print("Incorrect input")
+        return
+    if (t_nodes[0],t_nodes[1]) not in edges and (t_nodes[1],t_nodes[0]) not in edges:
+        print("Incorrect input (edge doesn't exists)")
+
+    #adding pink node
+    colors.append(color("yellow"))
+    nodes.append(max(nodes) + 1)
+    labels.append(str(max(nodes)))
+    #creating new edges
+    edges.append((t_nodes[0], max(nodes)))
+    edges.append((t_nodes[1], max(nodes)))
+    #deleting old edge
+    if (t_nodes[0],t_nodes[1]) in edges:
+        edges.remove((t_nodes[0],t_nodes[1]))
+    else:
+        edges.remove((t_nodes[1], t_nodes[0]))
+
+    print("Transformation complete")
 
 if __name__ == "__main__":
-    nodes = [0]
-    labels = ["0"]
+    nodes = []
+    labels = []
     edges = []
-    colors = ['#FF0000']
+    colors = []
     graph = Graph(nodes, edges, False)
 
-    i = "wthwth"
+    nodes_to_transform = []
+    i=1
 
     while i != "e":
         show(graph, "tiag.html", colors, labels)
-        print("Choose node to transform or e to exit")
-        i = input()
-        if i == "e":
-            break
-        elif int(i) > max(nodes):
+        print("Nodes to transform: ", nodes_to_transform)
+        print("Choose one more node to transform, transformation name to transform chosen nodes or e to exit")
+        i= input()
+
+        match i:
+            case "e":
+                break
+            case "t0":
+                t0(nodes, colors, labels, nodes_to_transform)
+                nodes_to_transform = []
+            case "t1":
+                t1(nodes, colors, labels, nodes_to_transform)
+                nodes_to_transform=[]
+            case "t2":
+                t2(nodes, colors, labels, nodes_to_transform)
+                nodes_to_transform = []
+            case _:
+                if not i.isnumeric() : #checking if input is a number:
+                    print("Incorrect input")
+                else:
+                    nodes_to_transform.append(int(i))
+                    '''
+                    min(nodes_to_transform)<0:
+            print("Incorrect input data (there are no negative nodes)")
+        elif int(nodes_to_transform) > max(nodes):
             print("Incorrect input")
         else:
-            t1(nodes, colors, labels, int(i))
-            print("Transformation complete")
+            t1(nodes, colors, labels, int(nodes_to_transform))
+            '''
