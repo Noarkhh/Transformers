@@ -131,6 +131,28 @@ def t2(nodes, colors, labels, t_nodes):
 
     print("Transformation complete")
 
+def t3(nodes, colors, labels, t_nodes):
+    # disconnects yellow node from red node
+    if len(t_nodes) != 2:
+        print("Incorrect amount of input nodes")
+        return
+    if colors[t_nodes[0]] != color("red") or colors[t_nodes[1]] != color("yellow"):
+        print("Incorrect input for this transformation")
+
+    if len(nodes) == 0:
+        print("Incorrect input")
+        return
+    if (t_nodes[0],t_nodes[1]) not in edges and (t_nodes[1],t_nodes[0]) not in edges:
+        print("Incorrect input (edge doesn't exists)")
+
+    #deleting old edge
+    if (t_nodes[0],t_nodes[1]) in edges:
+        edges.remove((t_nodes[0],t_nodes[1]))
+    else:
+        edges.remove((t_nodes[1], t_nodes[0]))
+
+    print("Transformation complete")
+
 if __name__ == "__main__":
     nodes = []
     labels = []
@@ -159,16 +181,12 @@ if __name__ == "__main__":
             case "t2":
                 t2(nodes, colors, labels, nodes_to_transform)
                 nodes_to_transform = []
+            case "t3":
+                t3(nodes, colors, labels, nodes_to_transform)
+                nodes_to_transform = []
             case _:
                 if not i.isnumeric() : #checking if input is a number:
                     print("Incorrect input")
                 else:
                     nodes_to_transform.append(int(i))
-                    '''
-                    min(nodes_to_transform)<0:
-            print("Incorrect input data (there are no negative nodes)")
-        elif int(nodes_to_transform) > max(nodes):
-            print("Incorrect input")
-        else:
-            t1(nodes, colors, labels, int(nodes_to_transform))
-            '''
+
