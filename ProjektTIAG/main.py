@@ -102,6 +102,7 @@ def t0(nodes, colors, labels, node):
     colors.append(color("red"))
     print("Transformation complete")
 
+
 def t2(nodes, colors, labels, t_nodes):
     # adds yellow node between red node connected to pink node
     if len(t_nodes) != 2:
