@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from color import Color
+from src.color import Color
 
 
 @dataclass(frozen=True)

@@ -1,0 +1,12 @@
+{
+  "left": {
+    "nodes": {},
+    "edges": []
+  },
+  "right": {
+    "nodes": {
+      "1": "RED"
+    },
+    "edges": []
+  }
+}

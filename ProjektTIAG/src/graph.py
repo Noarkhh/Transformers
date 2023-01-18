@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import Optional
-from node import Node
-from edge import Edge
-from color import Color
-from production import Production
+from src.node import Node
+from src.edge import Edge
+from src.color import Color
+from src.production import Production
 
 
 class Graph:
@@ -11,7 +11,6 @@ class Graph:
         self.nodes: list[Node] = []
         self.edges: list[Edge] = []
         self.adjacency_dict: dict[Node, list[Node]] = {}
-        self.adjacency_matrix: dict[Node, dict[Node, bool]] = {}
 
         self.nodes_by_id: dict[int, Node] = {}
 
@@ -23,7 +22,7 @@ class Graph:
             for edge in edges:
                 self.add_edge(edge)
 
-    def get_node(self, node_id: int) -> Node:
+    def get_node(self, node_id: int) -> Optional[Node]:
         return self.nodes_by_id.get(node_id)
 
     def get_new_node_id(self) -> int:
@@ -32,10 +31,6 @@ class Graph:
     def add_node(self, node: Node) -> None:
         self.nodes.append(node)
         self.adjacency_dict[node] = []
-        self.adjacency_matrix[node] = {}
-        for existing_node in self.nodes:
-            self.adjacency_matrix[node][existing_node] = False
-            self.adjacency_matrix[existing_node][node] = False
 
         self.nodes_by_id[node.node_id] = node
 
@@ -47,9 +42,6 @@ class Graph:
         self.adjacency_dict[edge.ends[0]].append(edge.ends[1])
         self.adjacency_dict[edge.ends[1]].append(edge.ends[0])
 
-        self.adjacency_matrix[edge.ends[0]][edge.ends[1]] = True
-        self.adjacency_matrix[edge.ends[1]][edge.ends[0]] = True
-
     def remove_node(self, node: Node) -> None:
         if node not in self.nodes:
             raise ValueError("Node not in graph")
@@ -58,21 +50,15 @@ class Graph:
 
         self.nodes.remove(node)
         self.adjacency_dict.pop(node)
-        self.adjacency_matrix.pop(node)
-        for connections in self.adjacency_matrix.values():
-            connections.pop(node)
         self.nodes_by_id.pop(node.node_id)
 
     def remove_edge(self, edge: Edge):
         if edge not in self.edges:
-            raise ValueError("Edge not in graph")
+            raise ValueError(f"Edge {edge} not in graph")
 
         self.edges.remove(edge)
         self.adjacency_dict[edge.ends[0]].remove(edge.ends[1])
         self.adjacency_dict[edge.ends[1]].remove(edge.ends[0])
-
-        self.adjacency_matrix[edge.ends[0]][edge.ends[1]] = False
-        self.adjacency_matrix[edge.ends[1]][edge.ends[0]] = False
 
     def intersection(self, other: Graph) -> Graph:
         shared_nodes: list[Node] = []
@@ -97,27 +83,4 @@ class Graph:
         return Graph(nodes, edges)
 
     def __repr__(self) -> str:
-        matrix_str = str(self.adjacency_matrix).replace('}, ', '}\n ')
-        return f"\nnodes: {self.nodes}\nedges: {self.edges}\ndict: {self.adjacency_dict}\nmatrix:\n{matrix_str}"
-
-
-if __name__ == "__main__":
-    graph1 = Graph()
-    graph1.add_node(Node(0, Color.RED))
-    graph1.add_node(Node(1, Color.YELLOW))
-    graph1.add_edge(Edge(graph1.get_node(0), graph1.get_node(1)))
-    graph1.add_node(Node(2, Color.PINK))
-    graph1.add_edge(Edge(graph1.get_node(0), graph1.get_node(2)))
-    print(graph1)
-
-    graph2 = Graph()
-    graph2.add_node(Node(1, Color.YELLOW))
-    graph2.add_node(Node(2, Color.PINK))
-    graph2.add_edge(Edge(graph1.get_node(1), graph1.get_node(2)))
-    print("\n\n")
-    print(graph2)
-    print(graph1.intersection(graph2))
-
-    production = Production(graph1, graph2)
-
-    production.apply(graph1, [Node(0, Color.RED), Node(1, Color.YELLOW), Node(5, Color.PINK)])
+        return f"\nnodes: {self.nodes}\nedges: {self.edges}\ndict: {self.adjacency_dict}\n"

@@ -1,8 +1,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from graph import Graph
-    from node import Node
+    from src.graph import Graph
+    from src.node import Node
 
 
 class Production:
@@ -12,7 +12,7 @@ class Production:
         self.right_graph: Graph = right_graph
         self.middle_graph: Graph = left_graph.intersection(right_graph)
 
-    def apply(self, main_graph: Graph, nodes: list[Node]) -> None:
+    def is_valid(self, main_graph: Graph, nodes: list[Node]) -> dict[int, int]:
         if len(nodes) != len(self.left_graph.nodes):
             raise ValueError("Wrong amount of nodes!")
         if not all([node in main_graph.nodes for node in nodes]):
@@ -32,8 +32,18 @@ class Production:
             else:
                 raise ValueError("Nodes' colors do not match!")
 
+        return prod_to_main_nodes_ids
+
+    def apply(self, main_graph: Graph, nodes: list[Node]) -> None:
+
+        prod_to_main_nodes_ids = self.is_valid(main_graph, nodes)
+
         mapped_left = self.left_graph.copy_with_id_mapping(prod_to_main_nodes_ids)
         mapped_middle = self.middle_graph.copy_with_id_mapping(prod_to_main_nodes_ids)
+
+        for left_edge in mapped_left.edges:
+            if left_edge not in main_graph.edges:
+                raise ValueError("Edge in left production graph not in main graph!")
 
         for left_node in mapped_left.nodes:
             if left_node in mapped_middle.nodes:
@@ -41,9 +51,6 @@ class Production:
             for connected_node in main_graph.adjacency_dict[left_node]:
                 if connected_node.node_id not in mapped_middle.nodes:
                     raise ValueError("Illegal embedding of production graph!")
-
-        print("mapped left:\n")
-        print(mapped_left)
 
         for left_edge in mapped_left.edges:
             if left_edge not in mapped_middle.edges:
@@ -68,3 +75,6 @@ class Production:
         for right_edge in mapped_right.edges:
             if right_edge not in mapped_middle.edges:
                 main_graph.add_edge(right_edge)
+
+    def __repr__(self):
+        return f"L: {self.left_graph}\nM: {self.middle_graph}\nR: {self.right_graph}"
