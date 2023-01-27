@@ -8,6 +8,8 @@ import ast
 def parse_node_input(nodes_str: str, main_graph: Graph) -> Optional[list[Node]]:
     try:
         nodes_ids = ast.literal_eval(nodes_str)
+        if isinstance(nodes_ids, int):
+            nodes_ids = [nodes_ids]
         if not isinstance(nodes_ids, list) and not isinstance(nodes_ids, tuple) and not isinstance(nodes_ids, set):
             raise ValueError
         if not all([isinstance(node_id, int) for node_id in nodes_ids]):
