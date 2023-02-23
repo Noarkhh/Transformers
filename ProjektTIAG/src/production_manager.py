@@ -13,9 +13,9 @@ class ProductionManager:
     def __init__(self) -> None:
         self.productions: dict[str, Production] = {}
 
-        for production_path in glob.glob("productions/*.json"):
+        for production_path in glob.glob("../productions/*.json"):
             with open(production_path, "r") as f:
-                self.parse_production(production_path.removeprefix("productions/").removesuffix(".json"), json.load(f))
+                self.parse_production(production_path.removeprefix("../productions/").removesuffix(".json"), json.load(f))
 
     def parse_production(self, production_name: str, production_dict: dict[str, dict[str, Any]]) -> None:
         left_nodes: dict[int, Node] = {}
